@@ -15,7 +15,7 @@ import jp.go.aist.rtm.RTC.util.DataRef;
 import RTC.ReturnCode_t;
 import RTC.Time;
 import RTC.TimedBooleanSeq;
-import RTC.TimedDoubleSeq;
+import RTC.TimedLongSeq;
 import RTC.TimedPose2D;
 import RTC.TimedVelocity2D;
 import RTC.Velocity2D;
@@ -38,9 +38,9 @@ public class MobileRobotControllerImpl extends DataFlowComponentBase {
         m_pos_val = new TimedPose2D();
         m_pos = new DataRef<TimedPose2D>(m_pos_val);
         m_posIn = new InPort<TimedPose2D>("pos", m_pos);
-        m_joy_val = new TimedDoubleSeq();
-        m_joy = new DataRef<TimedDoubleSeq>(m_joy_val);
-        m_joyIn = new InPort<TimedDoubleSeq>("joy", m_joy);
+        m_joy_val = new TimedLongSeq();
+        m_joy = new DataRef<TimedLongSeq>(m_joy_val);
+        m_joyIn = new InPort<TimedLongSeq>("joy", m_joy);
         m_bump_val = new TimedBooleanSeq();
         m_bump = new DataRef<TimedBooleanSeq>(m_bump_val);
         m_bumpIn = new InPort<TimedBooleanSeq>("bumper", m_bump);
@@ -169,9 +169,9 @@ public class MobileRobotControllerImpl extends DataFlowComponentBase {
     protected ReturnCode_t onExecute(int ec_id) {
     	if(m_joyIn.isNew()) {
     		m_joyIn.read();
-    		double x  = m_joy.v.data[0];
-    		double y =  m_joy.v.data[1];
-    		
+    		double x  = m_joy.v.data[0] / 1000.0;
+    		double y =  m_joy.v.data[1] / 1000.0;
+		//System.out.println("[RTC::MobileRobotController] - Received (" + x + ", " + y + ")");
     		m_vel.v.data.vx = 100 * y;
     		m_vel.v.data.vy = 0;
     		m_vel.v.data.va = -x / 2;
@@ -279,11 +279,11 @@ public class MobileRobotControllerImpl extends DataFlowComponentBase {
      */
     protected InPort<TimedPose2D> m_posIn;
 
-    protected TimedDoubleSeq m_joy_val;
-    protected DataRef<TimedDoubleSeq> m_joy;
+    protected TimedLongSeq m_joy_val;
+    protected DataRef<TimedLongSeq> m_joy;
     /*!
      */
-    protected InPort<TimedDoubleSeq> m_joyIn;
+    protected InPort<TimedLongSeq> m_joyIn;
     
     protected TimedBooleanSeq m_bump_val;
     protected DataRef<TimedBooleanSeq> m_bump;
